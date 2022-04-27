@@ -9,8 +9,6 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import net.kaczmarzyk.spring.data.jpa.domain.Equal;
-import net.kaczmarzyk.spring.data.jpa.domain.LikeIgnoreCase;
-import net.kaczmarzyk.spring.data.jpa.web.annotation.And;
 import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
@@ -34,14 +32,12 @@ public class WeatherController {
     @GetMapping
     @ApiOperation("Function to get all weather with filter")
     public ResponseEntity<List<WeatherDto>> getAllWeather(
-            @And({
-                    @Spec(path = "city", spec = LikeIgnoreCase.class),
-                    @Spec(path = "date", spec = Equal.class)
-            }) Specification<Weather> spec
+            @Spec(path = "date", spec = Equal.class) Specification<Weather> spec,
+            @RequestParam(required = false) List<String> city,
+            @RequestParam(required = false) String sort
     ) {
-        return ResponseEntity.ok(weatherService.getAll(spec));
+        return ResponseEntity.ok(weatherService.getAll(spec, city, sort));
     }
-
 
     @GetMapping("/{weatherId}")
     @ApiOperation("Function to get weather by specific id")

@@ -1,24 +1,24 @@
 package com.akvelon.weather.service.model.entity;
 
 import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 
 import javax.persistence.*;
-import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 
 
 @Entity
 @Getter
 @Setter
+@NoArgsConstructor
 @Table(name = "weather")
 @TypeDef(name = "jsonb", typeClass = JsonBinaryType.class)
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@AllArgsConstructor
 public class Weather {
 
     @Id
@@ -27,7 +27,7 @@ public class Weather {
     )
     Long id;
 
-    LocalDate date;
+    Date date;
 
     String lat;
 
