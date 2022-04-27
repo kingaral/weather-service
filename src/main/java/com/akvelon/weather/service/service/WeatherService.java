@@ -1,9 +1,8 @@
 package com.akvelon.weather.service.service;
 
 import com.akvelon.weather.service.model.dto.WeatherDto;
-import com.akvelon.weather.service.model.entity.Weather;
-import org.springframework.data.jpa.domain.Specification;
 
+import java.text.ParseException;
 import java.util.List;
 
 /**
@@ -22,12 +21,12 @@ public interface WeatherService {
     /**
      * Get all weather by filter
      *
-     * @param spec     specification with filter date
+     * @param date
      * @param city     City name
      * @param sortDate sort of date
      * @return list of {@link WeatherDto}
      */
-    List<WeatherDto> getAll(Specification<Weather> spec, List<String> city, String sortDate);
+    List<WeatherDto> getAll(String date, List<String> city, String sortDate) throws ParseException;
 
     /**
      * Find weather by id

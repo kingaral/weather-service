@@ -15,6 +15,9 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -30,6 +33,8 @@ public class WeatherServiceImpl implements WeatherService {
     WeatherConverter weatherConverter;
     WeatherDtoConverter weatherDtoConverter;
 
+    static SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+
     /**
      * {@inheritDoc}
      */
@@ -43,7 +48,17 @@ public class WeatherServiceImpl implements WeatherService {
      * {@inheritDoc}
      */
     @Override
-    public List<WeatherDto> getAll(Specification<Weather> spec, List<String> city, String sortDate) {
+    public List<WeatherDto> getAll(String date, List<String> city, String sortDate) throws ParseException {
+        Specification<Weather> dateSpec = Specification.where(null);
+
+        if (Objects.nonNull(date)) {
+            Date parsedDate = simpleDateFormat.parse(date);
+            parsedDate.setHours(6);
+            Specification<Weather> datePred = (root, query, criteriaBuilder) ->
+                    criteriaBuilder.equal(root.get("date"), parsedDate);
+            dateSpec = dateSpec.and(datePred);
+        }
+
         Specification<Weather> citySpec = Specification.where(null);
 
         if (Objects.nonNull(city)) {
@@ -54,15 +69,15 @@ public class WeatherServiceImpl implements WeatherService {
                 citySpec = citySpec.or(cityPred);
             }
         }
-        Specification<Weather> finalSpec = Specification.where(citySpec.and(spec));
+        Specification<Weather> finalSpec = Specification.where(dateSpec.and(citySpec));
         List<Weather> weather;
         if (Objects.nonNull(sortDate)) {
             Sort.Direction dateDirection = Sort.Direction.ASC;
             if (sortDate.equals("-date")) {
                 dateDirection = Sort.Direction.DESC;
             }
-            Sort date = Sort.by(dateDirection, "date");
-            weather = weatherRepository.findAll(finalSpec, date);
+            Sort sort = Sort.by(dateDirection, "date");
+            weather = weatherRepository.findAll(finalSpec, sort);
 
         } else {
             weather = weatherRepository.findAll(finalSpec);

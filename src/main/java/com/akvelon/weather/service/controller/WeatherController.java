@@ -1,21 +1,18 @@
 package com.akvelon.weather.service.controller;
 
 import com.akvelon.weather.service.model.dto.WeatherDto;
-import com.akvelon.weather.service.model.entity.Weather;
 import com.akvelon.weather.service.service.WeatherService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import net.kaczmarzyk.spring.data.jpa.domain.Equal;
-import net.kaczmarzyk.spring.data.jpa.web.annotation.Spec;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.ParseException;
 import java.util.List;
 
 
@@ -32,11 +29,10 @@ public class WeatherController {
     @GetMapping
     @ApiOperation("Function to get all weather with filter")
     public ResponseEntity<List<WeatherDto>> getAllWeather(
-            @Spec(path = "date", spec = Equal.class) Specification<Weather> spec,
+            @RequestParam(required = false) String date,
             @RequestParam(required = false) List<String> city,
-            @RequestParam(required = false) String sort
-    ) {
-        return ResponseEntity.ok(weatherService.getAll(spec, city, sort));
+            @RequestParam(required = false) String sort) throws ParseException {
+        return ResponseEntity.ok(weatherService.getAll(date, city, sort));
     }
 
     @GetMapping("/{weatherId}")
